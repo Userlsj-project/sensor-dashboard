@@ -81,3 +81,17 @@ CREATE TABLE sensor_data (
     recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- 기록 시각
 );
 ```
+
+---
+
+## 전체 시스템 블럭도
+
+```mermaid
+graph TD
+    A[injector.py<br/>Python 가상 센서 시뮬레이터] -->|3초마다 INSERT| B[(MySQL 8.0<br/>sensor_db.sensor_data)]
+    B -->|최근 50개 SELECT| C[index.php<br/>Apache 웹서버]
+    B -->|최근 20개 SELECT| D[api.py<br/>Flask REST API :5000]
+    C -->|동적 HTML + Chart.js| E[브라우저<br/>실시간 대시보드]
+    D -->|JSON 응답| E
+    E -->|5초마다 자동 새로고침| C
+```
